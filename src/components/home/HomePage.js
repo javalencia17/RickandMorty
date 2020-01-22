@@ -1,38 +1,25 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import Card from '../card/Card'
 import styles from './home.module.css'
-import axios from 'axios'
+import { connect } from 'react-redux'
+import { removeCharacterActions, addToFavoritesAction} from '../../redux/charsDuck'
 
-let URL = "https://rickandmortyapi.com/api"
 
-export default function Home() {
+const Home = ({ chars, removeCharacterActions, addToFavoritesAction }) => {
 
-    let [chars, setChars] = useState([])
-
-    useEffect(() => {
-        getCharacters()
-    }, [])
-
-    function nextChar() {
-        chars.shift()
-        if (!chars.length) {
-            //get more characters
-        }
-        setChars([...chars])
-    }
-
-    function renderCharacter() {
+    const  renderCharacter = () => {
         let char = chars[0]
         return (
-            <Card leftClick={nextChar} {...char} />
+            <Card leftClick={nextCaracter} {...char}  rightClick={add} />
         )
     }
 
-    function getCharacters() {
-        return axios.get(`${URL}/character`)
-            .then(res => {
-                setChars(res.data.results)
-            })
+    const nextCaracter = () => {
+        removeCharacterActions()
+    } 
+
+    const add = () => {
+        addToFavoritesAction()
     }
 
     return (
@@ -44,3 +31,11 @@ export default function Home() {
         </div>
     )
 }
+
+const mapStateToProps = (state) => {
+    return {
+        chars: state.Chars.array
+    }
+}
+
+export default connect(mapStateToProps, { removeCharacterActions, addToFavoritesAction })(Home)
